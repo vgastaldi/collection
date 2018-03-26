@@ -4,18 +4,18 @@
 options(stringsAsFactors = FALSE)
 
 # Definir o diretorio
-setwd("~/Downloads//")
+setwd("")
 
 # Carregar os pacotes do R que serao utilizados
 library(readxl)
 library(dplyr)
 
 # Ler o arquivo a ser utilizado. Variações podem ser utilizadas com o read.delim
-read_excel("input_DW.xlsx") -> delta
+read_excel("?.xlsx") -> delta
 #read.delim("arquivo.?", sep = ",", header=TRUE, na.strings = c(""," ",".")) -> delta
 
 
-# Elimine as colunas que nao sao necessarias. O script está estruturado para três colunas de identificação e uma coluna com valores
+# Elimine as colunas que nao sao necessarias. O script está estruturado para três colunas de identificação e uma coluna com valores, elimine as colunas adicionais
 delta[,-5] -> delta
 
 # Obter as variaveis que serao utilizadas para iterar a tabela
