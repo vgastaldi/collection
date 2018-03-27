@@ -4,14 +4,14 @@
 options(stringsAsFactors = FALSE)
 
 # Definir o diretorio - no Windows copiar o caminho da pasta, substituindo \ por \\
-setwd("")
+setwd("~/Downloads/")
 
 # Carregar os pacotes do R que serao utilizados
 library(readxl)
 library(dplyr)
 
 # Ler o arquivo a ser utilizado. Variacoes podem ser utilizadas com o read.delim
-read_excel(".xlsx") -> delta
+read_excel("input_DW.xlsx") -> delta
 #read.delim("arquivo.?", sep = ",", header=TRUE, na.strings = c(""," ",".")) -> delta
 
 
@@ -56,11 +56,7 @@ for (i in subespecie){
     subespecie_calculo <- subespecie_par_periodo %>% 
       group_by(subespecie, tratamento) %>% 
       summarise(media = mean(diferenca),
-                erro_padrao_manha = sd(manha)/sqrt(length(manha)), erro_padrao_tarde = sd(tarde)/sqrt(length(tarde)))
-    # Calculo do erro padrao da diferenca
-    subespecie_calculo$erro_padrao_diferenca <- sqrt((subespecie_calculo$erro_padrao_manha^2)+(subespecie_calculo$erro_padrao_tarde^2))
-    # Removendo as colunas do erro padrao de cada periodo
-    subespecie_calculo[,-c(4,5)] -> subespecie_calculo
+                erro_padrao_diferenca = sqrt(((sd(manha)/sqrt(length(manha)))^2)+((sd(tarde)/sqrt(length(tarde)))^2)))
     # Juntar em um arquivo so
     rbind(tabela_final, subespecie_calculo) -> tabela_final
     
@@ -72,7 +68,7 @@ tabela_final[order(tabela_final$subespecie),]  -> tabela_final
 tabela_deltas[order(tabela_deltas$subespecie),]  -> tabela_deltas
 
 
-# Como trabalha com o Excel vamos trocar o ponto pela v?rgula no separador
+# Como trabalha com o Excel vamos trocar o ponto pela virgula no separador
 gsub("\\.",",",tabela_final$media) -> tabela_final$media
 gsub("\\.",",",tabela_final$erro_padrao_diferenca) -> tabela_final$erro_padrao_diferenca
 
@@ -80,8 +76,9 @@ gsub("\\.",",",tabela_final$erro_padrao_diferenca) -> tabela_final$erro_padrao_d
 # Ha alternativas melhores, mas elas querem Perl ou Java instalado no computador, essa ? a mais simples
 write.table(tabela_final, "delta_R_DW.csv",row.names = FALSE,sep = "\t", quote = FALSE)
 
-# Gravar os deltas individuais
+# Como trabalha com o Excel vamos trocar o ponto pela virgula no separador
 gsub("\\.",",",tabela_deltas$diferenca) -> tabela_deltas$diferenca
+# Gravar os deltas individuais
 write.table(tabela_deltas, "deltas_R.csv",row.names = FALSE,sep = "\t", quote = FALSE)
 
             
