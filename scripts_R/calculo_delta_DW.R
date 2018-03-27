@@ -1,24 +1,24 @@
 # Script para calculo do erro padrao da diferenca entre tratamentos + media
-# Disponível em https://github.com/vgastaldi/collection
+# Disponivel em https://github.com/vgastaldi/collection
 # Definir opcoes do R para carregar o arquivo
 options(stringsAsFactors = FALSE)
 
-# Definir o diretorio
+# Definir o diretorio - no Windows copiar o caminho da pasta, substituindo \ por \\
 setwd("")
 
 # Carregar os pacotes do R que serao utilizados
 library(readxl)
 library(dplyr)
 
-# Ler o arquivo a ser utilizado. Variações podem ser utilizadas com o read.delim
+# Ler o arquivo a ser utilizado. Variacoes podem ser utilizadas com o read.delim
 read_excel(".xlsx") -> delta
 #read.delim("arquivo.?", sep = ",", header=TRUE, na.strings = c(""," ",".")) -> delta
 
 
-# Elimine as colunas que nao sao necessarias. O script está estruturado para três colunas de identificação e uma coluna com valores, elimine as colunas adicionais
+# Elimine as colunas que nao sao necessarias. O script esta estruturado para tres colunas de identificação e uma coluna com valores, elimine as colunas adicionais
 delta[,-5] -> delta
 
-# Obter as variaveis que serao utilizadas para iterar a tabela
+# Obter os valores que serao utilizados para iterar a tabela
 unique(delta$X__1) -> subespecie
 unique(delta$X__2) -> tratamento
 
@@ -34,7 +34,7 @@ for (i in subespecie){
   for (y in tratamento){
     subespecie_selecao[grep(paste0("\\b",y,"\\b"), subespecie_selecao$X__2),] -> subespecie_tratamento
     # Separar e ordenar para cada um dos horarios. Pode ser feito um loop se tiver mais do que 2 horarios.
-    # Isso vai envolver outras mudan?as nos calculos depois
+    # Isso vai envolver outras mudancas nos calculos depois
     subespecie_tratamento[grep("M", subespecie_tratamento$X__3),] -> subespecie_manha
     as.data.frame(subespecie_manha) -> subespecie_manha
     subespecie_manha[order(subespecie_manha[,4], decreasing = TRUE),]  -> subespecie_manha
