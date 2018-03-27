@@ -11,7 +11,7 @@ library(readxl)
 library(dplyr)
 
 # Ler o arquivo a ser utilizado. Variações podem ser utilizadas com o read.delim
-read_excel("?.xlsx") -> delta
+read_excel(".xlsx") -> delta
 #read.delim("arquivo.?", sep = ",", header=TRUE, na.strings = c(""," ",".")) -> delta
 
 
@@ -24,6 +24,7 @@ unique(delta$X__2) -> tratamento
 
 # Criar um objeto vazio para receber os dados
 tabela_final <- NULL
+tabela_deltas <- NULL
 
 # Loop para percorrer todas as subespecies/coluna 1
 for (i in subespecie){
@@ -50,9 +51,7 @@ for (i in subespecie){
     subespecie_par_periodo$diferenca <- subespecie_par_periodo[,3] - subespecie_par_periodo[,4]
     # Gravar arquivo para os deltas
     subespecie_par_periodo[,c(1,2,5)] -> subespecie_gravar
-    gsub("\\.",",",subespecie_gravar$diferenca) -> subespecie_gravar$diferenca
-    write.table(subespecie_gravar, paste0("delta_",i,y,".csv",sep=""),row.names = FALSE,sep = "\t", quote = FALSE)
-    rm(subespecie_gravar)
+    rbind(tabela_deltas, subespecie_gravar) -> tabela_deltas
     # Usar o pacote dplyr para calcular media e erro padrao do conjunto
     subespecie_calculo <- subespecie_par_periodo %>% 
       group_by(subespecie, tratamento) %>% 
@@ -70,6 +69,8 @@ for (i in subespecie){
 
 # Ordena a tabela pela primeira coluna
 tabela_final[order(tabela_final$subespecie),]  -> tabela_final
+tabela_deltas[order(tabela_deltas$subespecie),]  -> tabela_deltas
+
 
 # Como trabalha com o Excel vamos trocar o ponto pela v?rgula no separador
 gsub("\\.",",",tabela_final$media) -> tabela_final$media
@@ -78,5 +79,9 @@ gsub("\\.",",",tabela_final$erro_padrao_diferenca) -> tabela_final$erro_padrao_d
 # Gravar o arquivo em .csv para leitura no Excel. Sera um .csv que usa tabulacao!
 # Ha alternativas melhores, mas elas querem Perl ou Java instalado no computador, essa ? a mais simples
 write.table(tabela_final, "delta_R_DW.csv",row.names = FALSE,sep = "\t", quote = FALSE)
-            
+
+# Gravar os deltas individuais
+gsub("\\.",",",tabela_deltas$diferenca) -> tabela_deltas$diferenca
+write.table(tabela_deltas, "deltas_R.csv",row.names = FALSE,sep = "\t", quote = FALSE)
+
             
